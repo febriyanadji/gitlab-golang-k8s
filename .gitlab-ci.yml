@@ -14,8 +14,8 @@ deploy:
     entrypoint: [""]
   script:
     - cd ./deployment
-    - sed -i "s/CONTAINER_IMAGE/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA/g" deployment.yaml
+    - sed -i "s|CONTAINER_IMAGE|$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA|g" deployment.yaml
     - cat deployment.yaml
     - cat service.yaml
-    - kubectl apply -f deployment.yaml -f service.yaml -n default --dry-run=client --validate=true
-    - kubectl apply -f deployment.yaml -f service.yaml -n default
+    # - kubectl apply -f deployment.yaml -f service.yaml -n default --dry-run=client --validate=true
+    # - kubectl apply -f deployment.yaml -f service.yaml -n default
