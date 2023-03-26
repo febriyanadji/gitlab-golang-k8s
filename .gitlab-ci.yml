@@ -23,6 +23,11 @@ deploy:
   image:
     name: bitnami/kubectl:latest
     entrypoint: [""]
+  before_script:
+    - kubectl config set-cluster mycluster --server="https://kube.com:443" --insecure-skip-tls-verify
+    - kubectl config set-credentials gitlab --token=$(echo "aW5pdG9rZW4=" | base64 -d)
+    - kubectl config set-context mycontext --cluster=mycluster --namespace=default --user=gitlab
+    - kubectl config use-context mycontext
   script:
     - cd ./deployment
     - sed -i "s|CONTAINER_IMAGE|$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA|g" deployment.yaml
