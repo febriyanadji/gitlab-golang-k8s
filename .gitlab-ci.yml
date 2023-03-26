@@ -28,8 +28,9 @@ deploy:
     - kubectl config set-credentials gitlab --token=$(echo "aW5pdG9rZW4=" | base64 -d)
     - kubectl config set-context mycontext --cluster=mycluster --namespace=default --user=gitlab
     - kubectl config use-context mycontext
+    - cat ~/.kube/config
   script:
     - cd ./deployment
     - sed -i "s|CONTAINER_IMAGE|$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA|g" deployment.yaml
-    - kubectl apply -f deployment.yaml -f service.yaml -n default --dry-run=client --validate=true
-    - kubectl apply -f deployment.yaml -f service.yaml -n default
+    # - kubectl apply -f deployment.yaml -f service.yaml -n default --dry-run=client --validate=true
+    # - kubectl apply -f deployment.yaml -f service.yaml -n default
