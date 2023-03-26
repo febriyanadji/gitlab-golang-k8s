@@ -10,6 +10,7 @@ build_image:
     - docker push "$CI_REGISTRY_IMAGE"
 deploy:
   image: bitnami/kubectl:latest
+  entrypoint: [""]
   script:
     - cd ./deployment
     - sed -i 's/CONTAINER_IMAGE/$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA/g' deployment.yaml
