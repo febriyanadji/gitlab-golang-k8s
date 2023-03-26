@@ -2,6 +2,13 @@ image: docker:stable
 stages:
   - build
   - deploy
+  - test
+test:
+  stage: test
+  image: golang:1.19.5
+  script:
+    - go mod tidy && go mod download
+    - go test -v
 build_image:
   stage: build
   services:
@@ -19,7 +26,5 @@ deploy:
   script:
     - cd ./deployment
     - sed -i "s|CONTAINER_IMAGE|$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA|g" deployment.yaml
-    - cat deployment.yaml
-    - cat service.yaml
-    # - kubectl apply -f deployment.yaml -f service.yaml -n default --dry-run=client --validate=true
-    # - kubectl apply -f deployment.yaml -f service.yaml -n default
+    - kubectl apply -f deployment.yaml -f service.yaml -n default --dry-run=client --validate=true
+    - kubectl apply -f deployment.yaml -f service.yaml -n default
