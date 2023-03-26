@@ -3,34 +3,33 @@ stages:
   - test
   - build
   - deploy
-# test:
-#   stage: test
-#   image: golang:1.19.5
-#   script:
-#     - go mod tidy && go mod download
-#     - go test -v
-# build_image:
-#   stage: build
-#   services:
-#     - docker:dind
-#   before_script:
-#     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-#   script:
-#     - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" -t "$CI_REGISTRY_IMAGE:latest" .
-#     - docker push "$CI_REGISTRY_IMAGE"
+test:
+  stage: test
+  image: golang:1.19.5
+  script:
+    - go mod tidy && go mod download
+    - go test -v
+build_image:
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" -t "$CI_REGISTRY_IMAGE:latest" .
+    - docker push "$CI_REGISTRY_IMAGE"
 deploy:
   stage: deploy
   image:
     name: bitnami/kubectl:latest
     entrypoint: [""]
   before_script:
-    - kubectl config set-cluster my-cluster --server="https://kube.com:443" --insecure-skip-tls-verify
-    - kubectl config set-credentials my-user --token=$(echo "aW5pdG9rZW4=" | base64 -d)
+    - kubectl config set-cluster my-cluster --server="$K8S_SERVER" --insecure-skip-tls-verify
+    - kubectl config set-credentials my-user --token=$(echo "$K8S_TOKEN" | base64 -d)
     - kubectl config set-context my-context --cluster=my-cluster --namespace=default --user=my-user
     - kubectl config use-context my-context
-    - cat ~/.kube/config
   script:
     - cd ./deployment
     - sed -i "s|CONTAINER_IMAGE|$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA|g" deployment.yaml
-    # - kubectl apply -f deployment.yaml -f service.yaml -n default --dry-run=client --validate=true
-    # - kubectl apply -f deployment.yaml -f service.yaml -n default
+    - kubectl apply -f ./deployment -n default --dry-run=client --validate=true
+    - kubectl apply -f ./deployment -n default
