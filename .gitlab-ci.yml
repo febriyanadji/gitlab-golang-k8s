@@ -24,10 +24,10 @@ deploy:
     name: bitnami/kubectl:latest
     entrypoint: [""]
   before_script:
-    - kubectl config set-cluster mycluster --server="https://kube.com:443" --insecure-skip-tls-verify
-    - kubectl config set-credentials gitlab --token=$(echo "aW5pdG9rZW4=" | base64 -d)
-    - kubectl config set-context mycontext --cluster=mycluster --namespace=default --user=gitlab
-    - kubectl config use-context mycontext
+    - kubectl config set-cluster my-cluster --server="https://kube.com:443" --insecure-skip-tls-verify
+    - kubectl config set-credentials my-user --token=$(echo "aW5pdG9rZW4=" | base64 -d)
+    - kubectl config set-context my-context --cluster=my-cluster --namespace=default --user=my-user
+    - kubectl config use-context my-context
     - cat ~/.kube/config
   script:
     - cd ./deployment
