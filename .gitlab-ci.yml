@@ -1,8 +1,8 @@
 image: docker:stable
 stages:
+  - test
   - build
   - deploy
-  - test
 test:
   stage: test
   image: golang:1.19.5
