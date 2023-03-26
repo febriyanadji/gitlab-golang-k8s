@@ -1,6 +1,9 @@
 image: docker:stable
-
+stages:
+  - build
+  - deploy
 build_image:
+  stage: build
   services:
     - docker:dind
   before_script:
@@ -9,6 +12,7 @@ build_image:
     - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" -t "$CI_REGISTRY_IMAGE:latest" .
     - docker push "$CI_REGISTRY_IMAGE"
 deploy:
+  stage: deploy
   image:
     name: bitnami/kubectl:latest
     entrypoint: [""]
